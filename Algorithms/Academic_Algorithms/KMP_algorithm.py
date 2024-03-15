@@ -3,7 +3,10 @@ This module implements the Knuth-Morris-Pratt (KMP) algorithm for substring sear
 offers efficient string matching by precomputing the longest prefix that is also a suffix for all 
 prefixes of the pattern, allowing the search to skip ahead based on this information. This results in 
 a linear time search in the worst case, significantly improving over naive search methods, especially 
-for patterns with repeating substrings.
+for patterns with repeating substrings. 
+
+Note: KMP is especially efficient when you are searching for a single pattern in a text, as its
+preprocessing step optimizes subsequent searches for that pattern.
 
 Functions:
 - longest_prefix_suffix(s): Computes the longest prefix-suffix table for a given pattern.
