@@ -1,4 +1,4 @@
-# Computer_Science
+# Computer Science
 
 ## Introduction
 
