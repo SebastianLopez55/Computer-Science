@@ -18,13 +18,18 @@ def find_repeated_sequences(sequence, k, alphabet):
     """
     Searches for repeated sequences of length k in the provided string composed of the given alphabet.
     """
+    print_substrings = False  # Used for testing
+    if print_substrings:
+        print("\nInput Sequence: ", sequence)
+
     a = len(alphabet)
     n = len(sequence)
     mappings = {char: i + 1 for i, char in enumerate(alphabet)}
     numbers = [mappings[char] for char in sequence]
+    visited, repeated = set(), set()
 
-    hash_value = 0
     # Compute of polynomial rolling hash.
+    hash_value = 0
     for i in range(n - k + 1):
         if i == 0:
             # Computes polynomial stationary hash first.
@@ -37,7 +42,30 @@ def find_repeated_sequences(sequence, k, alphabet):
             out_window_hash = numbers[i - 1] * (a ** (k - 1))
             in_window_hash = numbers[i + k - 1]
             hash_value = ((prev_hash - out_window_hash) * a) + in_window_hash
-        print("Hash Value of", sequence[i : i + k], hash_value)
+
+        if hash_value in visited:
+            repeated.add(sequence[i : i + k])
+        else:
+            visited.add(hash_value)
+
+        if print_substrings:
+            print(
+                "\tHash value of ",
+                sequence[i : i + k],
+                ":",
+                hash_value,
+                "\n\tVisited: ",
+                visited,
+                "\n\tRepeated: ",
+                repeated,
+                "\n",
+            )
+
+    return list(repeated)
+
+
+# O(n) average time.
+# O(n) space, thanks to numbers and visited set.
 
 
 # TESTING
@@ -71,4 +99,44 @@ def test_get_hash():
     print("All test cases passed!")
 
 
+def test_find_repeated_sequences():
+    """
+    Tests the find_repeated_sequences function to ensure it accurately identifies and reports repeated sequences
+    of a given length k within a sequence, using a specific alphabet.
+    """
+    alphabet = ["A", "C", "G", "T"]  # Example alphabet for DNA sequences
+
+    # Test case 1: No repeats
+    assert (
+        find_repeated_sequences("ACGT", 3, alphabet) == []
+    ), "Test case 1 failed: Expected no repeated sequences."
+
+    # Test case 2: Simple repeats
+    sequence = "AGACCTAGAC"
+    k = 3
+    expected = ["AGA", "GAC"]  # Expected repeated sequences
+    assert sorted(find_repeated_sequences(sequence, k, alphabet)) == sorted(
+        expected
+    ), "Test case 2 failed: Expected repeated sequences not found."
+
+    # Test case 3: Longer repeats
+    sequence = "AAAAACCCCCAAAAACCCCCC"
+    k = 8
+    expected = ["AAAAACCC", "AAACCCCC", "AAAACCCC"]  # Expected repeated sequences
+    assert sorted(find_repeated_sequences(sequence, k, alphabet)) == sorted(
+        expected
+    ), "Test case 3 failed: Expected longer repeated sequences not found."
+
+    # Test case 4: Repeats with a single character
+    sequence = "GGGGGGGGGGGGGGGGGGGGGGGGG"
+    k = 12
+    expected = ["GGGGGGGGGGGG"]  # Expected repeated sequence
+    assert sorted(find_repeated_sequences(sequence, k, alphabet)) == sorted(
+        expected
+    ), "Test case 4 failed: Expected repeated sequences of single character not found."
+
+    print("All test cases passed!")
+
+
 test_get_hash()
+test_find_repeated_sequences()
